@@ -421,7 +421,7 @@ Handsontable.Core = function (rootElement, settings) {
      * @return recreate {Boolean} TRUE if row or col was added or removed
      */
     keepEmptyRows: function () {
-      var r, c, rlen, clen, emptyRows = 0, emptyCols = 0, recreateRows = false, recreateCols = false, val;
+      var r, c, rlen, clen, emptyRows = 0, emptyCols = 0, recreateRows = false, recreateCols = false, val, prop, isNotDef;
 
       var $tbody = $(priv.tableBody);
 
@@ -445,11 +445,13 @@ Handsontable.Core = function (rootElement, settings) {
         recreateRows = true;
       }
 
-      //count currently empty rows
+      //count currently empty rows - if cell has its default value, it's treated as empty
       rows : for (r = self.countRows() - 1; r >= 0; r--) {
         for (c = 0, clen = self.colCount; c < clen; c++) {
-          val = datamap.get(r, datamap.colToProp(c));
-          if (val !== '' && val !== null && typeof val !== 'undefined') {
+          prop = datamap.colToProp(c);
+          val = datamap.get(r, prop);
+          isNotDef = priv.settings.dataSchema[prop] != undefined && val != priv.settings.dataSchema[prop];
+          if (val !== '' && val !== null && typeof val !== 'undefined' && isNotDef) {
             break rows;
           }
         }
